@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package render_service;
+
+service RenderService {
+    rpc Render(RenderRequest) returns (RenderResponse) {}
+}
+
+message RenderRequest {
+    string name = 2;
+    string props = 3;
+}
+
+message RenderResponse {
+    string content = 2;
+}
