@@ -4,7 +4,7 @@ import json
 from django import template
 from django.utils.safestring import mark_safe
 from django.conf import settings
-from render_service import render_service_pb2_grpc, render_service_pb2
+from django_renderservice import render_service_pb2_grpc, render_service_pb2
 
 connection_string = "{host}:{port}".format(
     host=getattr(settings, "RENDER_SERVICE_HOST", "localhost"),
@@ -21,9 +21,14 @@ def render_component(context, _component_name, **kwargs):
     request = render_service_pb2.RenderRequest(
         name=_component_name, props=serialized_props
     )
-    render_id = "svc_render_root_{}".format(
-        len(context["render_service_data"].items()) + 1
-    )
+    try:
+        render_id = "svc_render_root_{}".format(
+            len(context["render_service_data"].items()) + 1
+        )
+    except KeyError:
+        raise Exception(
+            "'render_service_data' is not defined. Did you forget to add the context processor?"
+        )
     context["render_service_data"][render_id] = {
         "name": _component_name,
         "props": kwargs,
